@@ -1,7 +1,12 @@
-# Skill: OSINT Intelligence Cycle & Prefilter
+---
+name: ib_trade-osint
+description: "OSINT Intelligence Cycle & Prefilter skill. Transforms raw public information into actionable, trade-relevant intelligence by prioritizing recency, source authority, and market impact."
+---
+
+# Skill: ib_trade-osint
 
 ## Purpose
-This skill implements a fully automated, trading-specific Open Source Intelligence (OSINT) cycle. It transforms raw public information into actionable, trade-relevant intelligenc>
+This skill implements a fully automated, trading-specific Open Source Intelligence (OSINT) cycle. It transforms raw public information into actionable, trade-relevant intelligence by prioritizing recency, source authority, and probable market impact.
 
 ## Core Mandates
 1. **Recency First:** Prioritize information from the last 24–48 hours. Max window is 14 days.
