@@ -22,6 +22,12 @@ Skills follow the [Agent Skills](https://agentskills.io/) format.
 - **pentest-outbound-interaction-oob-detection**: Security assessment skill for outbound interaction and out-of-band (OOB) validation. Use when prompts include SSRF callback confirmation, blind XSS beacons, webhook abuse, XXE/OOB behavior, DNS/HTTP callback correlation, or asynchronous server-side interaction proof.
 - **pentest-recon-surface-analysis**: Security assessment skill for reconnaissance, endpoint/service enumeration, and attack-surface mapping. Use when prompts include recon, enumerate, map endpoints, discover assets, inventory interfaces, fingerprint technologies, or identify control-plane surfaces.
 
+## Available Incident Response Skills
+
+- **ms-incident-response**: Microsoft incident-response skill for Entra ID, Microsoft 365, Defender for Endpoint, Defender for Identity, and Defender for Office investigations. Use when triaging suspicious sign-ins, user compromise, mailbox rules or forwarding, token replay, impossible travel, consent abuse, endpoint compromise, or when you need TP/FP classification, scoping, containment, and reporting.
+- **incident-response-bec**: Blue teaming skill for analyzing a compromised user hit by a Business Email Compromise (BEC) resulting from an AiTM phishing attack. Use when the focus is mailbox abuse, suspicious sign-ins, forwarding, or session theft.
+- **incident-response-report**: Incident report drafting skill for post-compromise summaries, timelines, remediation, and stakeholder-ready writeups.
+
 ## Usage
 
 Each skill is a directory containing a `SKILL.md` file that defines its behavior, triggers, and instructions. These can be used by AI agents to perform specialized tasks in a structured and reproducible manner.
