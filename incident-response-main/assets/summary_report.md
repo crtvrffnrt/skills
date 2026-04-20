@@ -35,6 +35,7 @@ Provide a short summary of what happened, who or what was affected, and the curr
 
 ## Indicators of Compromise
 - **IPs:** [List]
+- **IP enrichment:** [Summarize `vpnchecker.sh` and `ipir.sh` results for each material public IP]
 - **Domains:** [List]
 - **Hashes:** [List]
 - **Mailbox artifacts:** [Rules, forwarding targets, subjects]

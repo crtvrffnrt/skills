@@ -25,3 +25,4 @@ Use this reference when deciding whether a Microsoft alert is a real incident or
 - Administrative scripts, software deployment, or vulnerability scanner activity.
 - Known corporate sync tools or sanctioned mailbox forwarding rules.
 - Device changes that align with reset, reimage, or enrollment activity.
+- A VPN or datacenter flag from public-IP enrichment without supporting anomalous behavior.

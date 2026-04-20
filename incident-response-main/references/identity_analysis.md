@@ -6,12 +6,14 @@ Use this guide when investigating a suspicious Microsoft identity event.
 - Confirm the `UPN`.
 - Pull recent alerts, risky sign-ins, and identity protection events for the user.
 - Record the first suspicious time and the current incident window.
+- Extract all IPs from the prompt and supporting logs, then run `/root/Tools/IncidentResponseScripts/vpnchecker.sh <ip>` and `/root/Tools/IncidentResponseScripts/ipir.sh <ip>` for each unique public IP.
 
 ## 2. Authentication review
 - Check source IP, geo, ASN, device, browser, and client app.
 - Compare the sign-in against the user’s normal pattern.
 - Look for MFA prompts, repeated denials, claim-based MFA satisfaction, or token replay indicators.
 - Identify all applications accessed in the same session.
+- Use the public-IP enrichment output as context, not as the only compromise signal.
 
 ## 3. Post-authentication activity
 - Review mailbox and audit events for mailbox reads, search activity, inbox rule creation, forwarding, or message sending.

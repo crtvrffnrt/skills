@@ -1,58 +1,66 @@
 ---
-name: incident_response-bec
-description: "Blue teaming skill for analyzing a compromised user hit by a Business Email Compromise (BEC) resulting from an AiTM (Adversary-in-the-Middle) phishing attack. Focuses on identifying malicious sign-ins, unauthorized mailbox rules, data exfiltration, and secondary phishing attempts. Requires a User Principal Name (UPN)."
+name: incident-response-bec
+description: Blue team skill for Business Email Compromise and AiTM investigations focused on suspicious sign-ins, mailbox abuse, forwarding, session theft, consent abuse, and secondary phishing. Requires a UPN when available.
 ---
 
-# Business Email Compromise (BEC) & AiTM Analysis
+# Business Email Compromise and AiTM Analysis
 
-This skill is designed for incident responders to analyze a user account suspected of being compromised via an Adversary-in-the-Middle (AiTM) phishing attack. These attacks often bypass MFA by stealing session cookies, leading to unauthorized mailbox access and further malicious activity.
+## Mission
+Determine whether a Microsoft identity and mailbox event is consistent with BEC, AiTM session theft, or another compromise pattern. Keep the assessment advisory; final decision belongs to the human analyst.
 
-## Activation Triggers (Positive)
-- `bec`
-- `business email compromise`
-- `aitm`
-- `adversary-in-the-middle`
-- `phishing investigation`
-- `compromised user`
-- `unauthorized mail forwarding`
-- `suspicious sign-in`
+## Use when
+- Suspicious sign-ins are paired with mailbox forwarding, inbox rules, or unexpected sent mail.
+- A user reports phishing, strange mailbox behavior, or external recipients the user did not send to.
+- The incident includes suspected session theft, token replay, or unauthorized app consent.
+- The same workflow applies to non-Microsoft cases when equivalent sign-in and mailbox evidence exists.
 
-## Exclusion Triggers (Negative)
-- `pentest`
-- `exploit development`
-- `vulnerability research`
-- `network service scan`
+## Required context
+- Preferred inputs: UPN, incident window, alert or incident ID, and any phishing message identifiers.
+- If UPN is missing and Microsoft telemetry is required, ask for it before querying.
 
-## Instructions
-1. **Identify the Target**: Ensure you have the User Principal Name (UPN) of the affected user. All following commands require this.
-2. **Verify Session**: Confirm you are logged in with an account that has sufficient permissions (e.g., Global Reader, Security Reader) using `az account show`.
-3. **Analyze Sign-in Logs**: Use `az rest` to query Microsoft Graph for recent sign-ins for the UPN. Look for unusual IP addresses, locations, or "MFA satisfied by claim in token" from new locations.
-   ```bash
-   az rest --method get --url "https://graph.microsoft.com/v1.0/auditLogs/signIns?\$filter=userPrincipalName eq '{UPN}'"
-   ```
-4. **Audit Mailbox Rules**: Check for newly created or suspicious inbox rules (e.g., "Delete" or "Move to RSS Feed") often used by attackers to hide their activity.
-   ```bash
-   az rest --method get --url "https://graph.microsoft.com/v1.0/users/{UPN}/mailFolders/inbox/messageRules"
-   ```
-5. **Trace Sent Items**: Identify if the attacker sent further phishing emails or exfiltrated data by checking the user's sent items.
-   ```bash
-   az rest --method get --url "https://graph.microsoft.com/v1.0/users/{UPN}/messages?\$filter=isDraft eq false"
-   ```
-6. **Check Forwarding Addresses**: Verify if the attacker enabled SMTP forwarding to an external address.
-   ```bash
-   az rest --method get --url "https://graph.microsoft.com/v1.0/users/{UPN}/mailboxSettings"
-   ```
+## Investigation flow
+1. Confirm the compromise hypothesis
+   - identify the first suspicious sign-in or mailbox event
+   - note source IP, geo, ASN, device, client app, and MFA context
+2. Extract all IPs from the prompt, phishing artifacts, logs, and mailbox evidence and enrich every unique public IP
+   - classify each IP as public or non-public before enrichment
+   - run `/root/Tools/IncidentResponseScripts/vpnchecker.sh <ip>` and `/root/Tools/IncidentResponseScripts/ipir.sh <ip>` for every public IP
+   - keep the raw outputs and use them in the verdict
+3. Review authentication
+   - look for impossible travel, session reuse, token replay, claim-based MFA satisfaction, repeated MFA prompts, or suspicious non-interactive activity
+4. Review mailbox and collaboration activity
+   - check inbox rules, forwarding, transport rules, sent items, deleted items, search behavior, delegated access, and OAuth consent
+   - look for MailItemsAccessed or equivalent mailbox access evidence when available
+5. Review downstream actions
+   - identify secondary phishing, data exfiltration, file sharing changes, role or group changes, and privileged app consent
+6. Contain and preserve
+   - preserve the suspicious events, then revoke sessions, reset credentials, remove malicious rules, disable forwarding, and remove unauthorized consent
+   - isolate the host if endpoint evidence shows active malware or credential theft
 
-## Tip 1: Detecting AiTM Session Theft
-In AiTM attacks, the attacker proxies the authentication process. Look for sign-ins where the `User-Agent` is consistent but the `IP Address` changes mid-session, or where the sign-in location is a known VPN/Cloud provider (like DigitalOcean, AWS, or Azure) while the user normally signs in from a residential/corporate range.
+## Public IP rule
+- If a public IP is present anywhere in the prompt or evidence, enrichment is required before closing the assessment.
+- `vpnchecker.sh` is the fast VPN and provider signal.
+- `ipir.sh` is the deeper multi-source reputation and infrastructure scoring pass.
+- A VPN, proxy, or datacenter result alone is not enough to call the IP malicious.
+- Use the enrichment results together with sign-in behavior, mailbox activity, and timeline context.
+- If the tools cannot be executed, state the limitation explicitly in the analyst note.
 
-## Should Do
-- Use the `az rest` command to interact directly with Microsoft Graph APIs for granular data.
-- Correlate the timing of the suspected phishing email with the first "unusual" sign-in.
-- Document all suspicious IP addresses and forwarding rules discovered.
-- Always check for "MailItemsAccessed" events if Log Analytics is available for more detailed exfiltration analysis.
+## Microsoft Graph guidance
+- Use `az rest` or the best available Microsoft telemetry path.
+- Scope every query to the user and time window under investigation.
+- Do not rely on the last sign-in date alone.
+- Treat MFA as one control signal, not proof of safety.
+- Do not alert the user before initial scoping if doing so could tip off an attacker.
 
-## Should Not Do
-- Do not assume MFA means the account is safe; AiTM attacks specifically target MFA-protected accounts.
-- Do not alert the user until the initial scoping is complete to avoid tipping off the attacker.
-- Do not rely solely on the "Last Signed In" date; audit the full log for concurrent sessions.
+## Evidence to preserve
+- IPs, user agents, device IDs, session IDs, timestamps, and app IDs
+- mailbox rule definitions, forwarding targets, and transport rule changes
+- OAuth consents, delegated permissions, role changes, and group changes
+- phishing message details or sender infrastructure when available
+
+## Assessment output
+- State whether the incident is confirmed, suspected, likely benign, or inconclusive.
+- Separate facts from indicators and hypotheses.
+- Explain whether the likely path is AiTM or session theft, mailbox compromise, or another access path.
+- Include public IP enrichment results for every material public IP.
+- List immediate containment actions and remaining gaps.

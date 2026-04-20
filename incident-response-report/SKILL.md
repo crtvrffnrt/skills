@@ -1,99 +1,68 @@
-# Incident Response Report Skill (incident_reponse-report)
+---
+name: incident-response-report
+description: Post-compromise incident reporting skill for decision-ready summaries, timelines, containment records, and remediation plans.
+---
+
+# Incident Response Report
 
 ## Mission
-To produce high-fidelity, professional, and visually consistent Post-Compromise Incident Reports. This skill ensures every report follows the Senior SOC Analyst and Incident Responders standard, providing a clear narrative from initial access to full containment.
+Turn an investigation into a concise report that a human analyst can review and close. Optimize for clarity, evidence traceability, and remediation follow-up.
 
-## Operating Style
-- **Tone:** Professional, direct, senior-level SOC analysis.
-- **Priority:** High-signal technical evidence (KQL/Audit) and actionable remediation.
-- **Structure:** Modular, allowing for licensing-dependent depth.
+## Writing rules
+- Keep the tone direct and professional.
+- Separate confirmed facts, indicators, and hypotheses.
+- Use UTC timestamps unless the user asks otherwise.
+- Cite the telemetry source or log family when possible.
+- Do not overstate certainty.
+- If evidence is partial, say what is missing and how that limits the conclusion.
+- Default to Markdown unless the user requests HTML or another format.
+- If public IPs appear in the source material and no enrichment is already present, run the required enrichment before finalizing the report.
 
-## Visual Formatting Standard
-Use consistent blocks and emojis for readability:
-- 🛡️ **Executive Summary**
-- 📊 **Incident Classification**
-- 👤 **Involved Entities**
-- ⏳ **Timeline (UTC+X)**
-- 🕵️ **Detailed Analysis**
-- 🛠️ **Actions Taken**
-- 📝 **Recommendations**
-- ⚠️ **Limitations**
+## Standard structure
+1. Executive Assessment
+2. Confirmed Facts
+3. Key Indicators
+4. Analytical Assessment
+5. Containment and Remediation
+6. Recommended Actions
+7. Timeline
+8. Limitations
+9. Appendix / IoCs
 
----
+## Suggested content
 
-## Report Template (Drafting Workflow)
+### Executive Assessment
+- State whether compromise is confirmed, suspected, historical, attempted, or unsupported.
+- Note severity.
+- List the primary affected users, hosts, or resources.
 
-### 1. Executive Summary (Zusammenfassung)
-*A 1-2 paragraph summary of the incident, impact, and current status.*
+### Confirmed Facts
+- Include only telemetry-supported statements.
 
-### 2. Incident Classification & Scope
-| Category | Value |
-| :--- | :--- |
-| **Severity** | ☒ High / ☐ Medium / ☐ Low |
-| **Involved Users** | `user@domain.com` |
-| **Permissions** | e.g., Standard User, AVD Access, Global Admin |
-| **Status** | Resolved / Ongoing |
+### Key Indicators
+- List IOCs and behavioral indicators with confidence notes.
+- For public IPs, include the combined results from `/root/Tools/IncidentResponseScripts/vpnchecker.sh` and `/root/Tools/IncidentResponseScripts/ipir.sh`, or state clearly that enrichment could not be completed.
 
-### 3. Timeline (UTC+X)
-*Ordered chronologically (Earliest to Latest).*
-- **[Timestamp]** - **Initial Access:** Vector identified (e.g., AiTM Phishing).
-- **[Timestamp]** - **Persistence:** MFA Registered / Inbox Rule created.
-- **[Timestamp]** - **Action on Objectives:** Malicious emails sent / Files accessed.
-- **[Timestamp]** - **Containment:** Password reset / Sessions revoked.
+### Analytical Assessment
+- Explain the likely attack path.
+- Note alternative explanations and gaps.
 
-### 4. Technical Deep Dive
-#### Identity & MFA Analysis
-- **Source IPs:** List malicious IPs with reputation (e.g., ExpressVPN).
-- **MFA Methods:** Documentation of unauthorized methods (e.g., Authenticator, SMS).
-- **Token Correlation:** Evidence of AiTM/Token-Replay using `SessionId` and `UniqueTokenIdentifier`.
+### Containment and Remediation
+- Record actions already taken and who took them.
+- Include preservation steps when relevant.
 
-#### Mail & Collaboration
-- **Inbox Rules:** Configuration details (e.g., "Move to Conversation History").
-- **Exfiltration/Outbound:** Recipient counts, subject lines, and volume of data.
-- **SPO/OneDrive/Teams:** List of accessed/downloaded files (or "Worst-Case" if logs are absent).
+### Recommended Actions
+- Add scoped containment, scoping, eradication, and recovery steps.
 
-### 5. Containment & Remediation (Actions Taken)
-*Detailed list of actions performed by the analyst or technician.*
-- [Timestamp] Account Disabled.
-- [Timestamp] Sessions Revoked (including MFA).
-- [Timestamp] Malicious Rules/MFA Methods removed.
+### Timeline
+- Order by first seen to last seen.
+- Include source references where practical.
 
-### 6. Limitations (Einschränkungen)
-*Document missing telemetry.*
-- e.g., "Entra ID P1 license limits sign-in log retention to 30 days."
-- e.g., "Lack of Defender for Office 365 P2 prevents Advanced Hunting URL click analysis."
+### Limitations
+- Note missing telemetry, retention constraints, license gaps, or unvalidated assumptions.
 
-### 7. Recommendations (Empfehlungen)
-- **Identity:** Conditional Access (CA), MFA enforcement, Token Protection.
-- **Email:** Safe Links, Safe Attachments, Phishing Simulation.
-- **Governance:** User awareness training on lookalike domains.
-
----
-
-## Technical Procedures: AiTM & Token Analysis
-When analyzing suspected Session Hijacking (AiTM):
-1. **Identify suspicious Sign-In:** Check for unusual IPs/Countries.
-2. **Extract Identifiers:**
-   - `SessionId` (sid): Links interactive sessions.
-   - `UniqueTokenIdentifier` (uti): Fingerprint for a specific token.
-3. **Correlate across Workloads:**
-   - Map `SessionId` from Sign-In logs to `AppAccessContext.AADSessionId` in Audit logs (SharePoint/Exchange).
-   - **Evidence of Replay:** Same `UniqueTokenIdentifier` seen from different IP ranges or User-Agents.
-
-## KQL Patterns for Correlation
-```kql
-// Correlate Sign-In with Office Activity via SessionId
-let targetSession = "YOUR_SESSION_ID_HERE";
-OfficeActivity
-| where AppAccessContext has targetSession
-| project TimeGenerated, Operation, ClientIP, UserId, OfficeWorkload, AppAccessContext
-| sort by TimeGenerated asc
-```
-
-## Quality Checklist
-- [ ] Timeline is in chronological order.
-- [ ] Timezone is explicitly stated.
-- [ ] External IPs are enriched with reputation data.
-- [ ] Worst-case assumptions are clearly marked where logs are missing.
-- [ ] All remediation steps include precise timestamps.
-- [ ] Report is signed by a SOC Manager before delivery.
+## Output quality
+- Use tables when they improve clarity.
+- Prefer short sections over narrative walls.
+- Keep the report suitable for technical stakeholders and leadership handoff.
+- Keep raw-tool provenance for public IP assessments so another analyst can reproduce the conclusion.
