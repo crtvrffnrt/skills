@@ -4,11 +4,6 @@ A collection of offensive, defensive, and trading skills for AI coding agents.
 
 Skills follow the [Agent Skills](https://agentskills.io/) format.
 
-## Available Trading Skills (NeonTrade)
-
-- **ib_trade-osint**: OSINT intelligence cycle and prefilter.
-- **ib_trade-analysis**: AI-supercycle stock analysis and strategy.
-- **ib_trade-execution**: Risk and trade execution.
 
 ## Available Pentest Skills
 
