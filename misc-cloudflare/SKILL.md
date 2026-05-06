@@ -1,4 +1,4 @@
-s---
+---
 name: cloudflare-api-helper
 description: Minimal Cloudflare operational helper for Codex/Gemini CLI. Use for Cloudflare DNS, zones, proxy settings, WAF/rulesets, cache/transform/origin rules, and account/zone inspection. Worker-specific tasks must use the locally authenticated Wrangler CLI instead of direct API calls.
 ---
