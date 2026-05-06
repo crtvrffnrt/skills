@@ -1,5 +1,5 @@
 ---
-name: cloudflare-api-helper
+name: misc-cloudflare
 description: Minimal Cloudflare operational helper for Codex/Gemini CLI. Use for Cloudflare DNS, zones, proxy settings, WAF/rulesets, cache/transform/origin rules, and account/zone inspection. Worker-specific tasks must use the locally authenticated Wrangler CLI instead of direct API calls.
 ---
 
@@ -18,25 +18,35 @@ export CODEX_CLOUDFLARE_TOKEN="<cloudflare-api-token>"
 export CODEX_CLOUDFLARE_ACCOUNT="<cloudflare-account-id>"
 ```
 
-Do not use hyphens in shell variable names. Shell variables like `CODEX-CLOUDFLARE-TOKEN` are invalid. Use `CODEX_CLOUDFLARE_TOKEN` and `CODEX_CLOUDFLARE_ACCOUNT`.
+Shell variables must use underscores. Do not use hyphens in variable names.
+
+- `CODEX_CLOUDFLARE_TOKEN` is required for all Cloudflare API calls.
+- `CODEX_CLOUDFLARE_ACCOUNT` is optional in general, but required for account-owned token verification and for account-specific API operations.
 
 Never print, echo, log, commit, or write the token value to repository files.
+Never place token values in examples.
 
 ## Mandatory first step: verify API token
 
 Before performing any Cloudflare API operation, verify that the token is present and valid.
 
-Run:
+Verification strategy:
+
+1. If `CODEX_CLOUDFLARE_ACCOUNT` is set, try account-owned token verification first:
 
 ```bash
-: "${CODEX_CLOUDFLARE_TOKEN:?Missing CODEX_CLOUDFLARE_TOKEN}"
-: "${CODEX_CLOUDFLARE_ACCOUNT:?Missing CODEX_CLOUDFLARE_ACCOUNT}"
-
-curl -X GET "https://api.cloudflare.com/client/v4/accounts/$CODEX_CLOUDFLARE_ACCOUNT/tokens/verify" \
-     -H "Authorization: Bearer $CODEX_CLOUDFLARE_TOKEN"
+GET https://api.cloudflare.com/client/v4/accounts/${CODEX_CLOUDFLARE_ACCOUNT}/tokens/verify
 ```
 
-The token is valid only if the JSON response contains:
+2. If that request fails with a route or authentication error, fall back to user-token verification:
+
+```bash
+GET https://api.cloudflare.com/client/v4/user/tokens/verify
+```
+
+3. If `CODEX_CLOUDFLARE_ACCOUNT` is not set, try only user-token verification.
+
+Treat a successful response as:
 
 ```json
 {
@@ -44,17 +54,13 @@ The token is valid only if the JSON response contains:
 }
 ```
 
-If validation fails, halt immediately. Do not attempt fallback authentication. Instruct the user to provide a valid Cloudflare API token with the required account and zone permissions.
+If all applicable verification attempts fail:
 
-Do not continue if any of these conditions are true:
+- Halt.
+- Explain that a valid Cloudflare API token is required.
+- If using an account-owned token, explain that `CODEX_CLOUDFLARE_ACCOUNT` must contain the Cloudflare Account ID.
 
-```text
-- CODEX_CLOUDFLARE_TOKEN is missing.
-- CODEX_CLOUDFLARE_ACCOUNT is missing.
-- The verify endpoint returns success=false.
-- The request returns HTTP 401 or HTTP 403.
-- The response cannot be parsed as successful Cloudflare API JSON.
-```
+Do not assume that failure of `/user/tokens/verify` means the token is unusable if account-owned token verification succeeds.
 
 ## API request pattern
 
@@ -77,7 +83,6 @@ curl -fsS -X PATCH "https://api.cloudflare.com/client/v4/<endpoint>" \
 
 Never place the token in the URL. Never use query-string authentication.
 
-
 ## Worker handling
 
 Do not use the REST API for Worker lifecycle operations when Wrangler is available locally.
@@ -90,6 +95,8 @@ wrangler whoami --json
 
 Continue only if Wrangler returns valid authenticated account information. If Wrangler is not authenticated, halt and instruct the user to authenticate Wrangler locally.
 
+Do not run Worker deployment commands unless explicitly requested.
+
 Use Wrangler for Worker tasks such as:
 
 ```text
@@ -100,16 +107,6 @@ Use Wrangler for Worker tasks such as:
 - Worker KV/R2/D1 bindings through Wrangler project configuration
 - Worker logs/tail
 - Wrangler configuration validation
-```
-
-Examples:
-
-```bash
-wrangler whoami --json
-wrangler deploy
-wrangler dev
-wrangler secret put SECRET_NAME
-wrangler tail
 ```
 
 Do not pass `CODEX_CLOUDFLARE_TOKEN` to Wrangler unless the user explicitly asks for token-based Wrangler execution. Prefer the existing local authenticated Wrangler session.
@@ -149,6 +146,7 @@ Token verification:
 
 ```text
 GET /user/tokens/verify
+GET /accounts/{account_id}/tokens/verify
 ```
 
 Accounts:
@@ -162,8 +160,8 @@ Zones:
 
 ```text
 GET /zones
-GET /zones/{zone_id}
 GET /zones?name={zone_name}
+GET /zones/{zone_id}
 ```
 
 DNS:
@@ -203,6 +201,56 @@ PATCH /accounts/{account_id}/rulesets/{ruleset_id}
 DELETE /accounts/{account_id}/rulesets/{ruleset_id}
 ```
 
+## Zone lookup workflow
+
+Use `/zones` to determine which zones the token can see.
+Use `/zones?name={zone_name}` to resolve the zone ID for a specific domain.
+
+Do not use `/accounts/{account_id}/zones`.
+
+If a target zone is not visible in `/zones` or `/zones?name={zone_name}`, do not guess the zone ID. Report that the token does not have visibility to that zone or that the zone is in another account.
+
+## DNS record listing workflow
+
+To list DNS records, first confirm the zone is visible and the zone object includes:
+
+```text
+#zone:read
+#dns_records:read
+```
+
+Then call:
+
+```text
+GET /zones/{zone_id}/dns_records
+```
+
+Minimum permissions to list DNS records:
+
+```text
+Zone -> Zone -> Read
+Zone -> DNS -> Read
+```
+
+To modify DNS records, add:
+
+```text
+Zone -> DNS -> Edit
+```
+
+If the DNS endpoint fails after the zone is visible, report the exact Cloudflare error code and message. Distinguish clearly between:
+
+```text
+- invalid token
+- wrong verification endpoint
+- missing account ID
+- zone not visible
+- missing Zone:Read
+- missing DNS:Read
+- wrong zone endpoint
+- wrong zone ID
+```
+
 ## Safety rules
 
 Do not perform destructive actions unless the user explicitly requested them.
@@ -237,4 +285,3 @@ When reporting results, include:
 ```
 
 Do not include bearer tokens, secret values, session cookies, or raw credential material in the response.
-
