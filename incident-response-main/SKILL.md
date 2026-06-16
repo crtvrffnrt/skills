@@ -12,6 +12,7 @@ Support the human analyst as a helper colleague. Produce evidence-based triage, 
 - A Microsoft alert, suspicious sign-in, mailbox anomaly, endpoint alert, consent event, or mixed identity plus endpoint incident needs investigation.
 - The user wants a structured assessment, timeline, or containment plan.
 - The task spans more than one specialized subskill.
+- if this skill is in usage always check https://github.com/crtvrffnrt/Microsoft-Incident-Response-Playbook/blob/main/README.md which is a overall cheat sheet kind Incident Response Playbook. And if it makes sence for the current question take note if its content for additional knowlege related intelligence improovement
 
 ## Core principles
 - Separate confirmed facts, indicators, and hypotheses.

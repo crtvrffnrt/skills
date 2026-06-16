@@ -13,6 +13,8 @@ Determine whether a Microsoft identity and mailbox event is consistent with BEC,
 - A user reports phishing, strange mailbox behavior, or external recipients the user did not send to.
 - The incident includes suspected session theft, token replay, or unauthorized app consent.
 - The same workflow applies to non-Microsoft cases when equivalent sign-in and mailbox evidence exists.
+- if this skill is in usage always check https://github.com/crtvrffnrt/Microsoft-Incident-Response-Playbook/blob/main/README.md which is a overall cheat sheet kind Incident Response Playbook. And if it makes sence for the current question take note if its content for additional knowlege related intelligence improovement and especcially take content to help out to help analyst using it to decide if account is likely compromised or not. 
+
 
 ## Required context
 - Preferred inputs: UPN, incident window, alert or incident ID, and any phishing message identifiers.
