@@ -39,6 +39,20 @@ Determine whether a Microsoft identity and mailbox event is consistent with BEC,
    - preserve the suspicious events, then revoke sessions, reset credentials, remove malicious rules, disable forwarding, and remove unauthorized consent
    - isolate the host if endpoint evidence shows active malware or credential theft
 
+## Identity and BEC Compromise Logic
+
+For suspicious sign-ins, MFA anomalies, AiTM suspicion, token theft, mailbox abuse, or BEC cases, do not stop at the sign-in result.
+Always try or help to evaluate:
+
+- Whether the password appears compromised, especially when correct-password activity is followed by MFA denial, MFA fatigue, or blocked Conditional Access.
+- Whether MFA was freshly performed, satisfied by claim, bypassed, not required, denied, or reused through an existing session.
+- Whether the source IP, ASN, country, city, device, browser, user agent, app, and resource match the user's 14- to 30-day baseline.
+- Whether session IDs, correlation IDs, or token identifiers link activity across unexpected IPs, apps, or non-interactive sign-ins.
+- Whether phishing delivery, URL clicks, Safe Links activity, or suspicious mail interaction happened before the suspicious sign-in.
+- Whether post-authentication activity occurred: mailbox access, MailItemsAccessed, inbox rules, forwarding, deletes, suspicious sends, OAuth consent, file downloads, Azure actions, or role changes.
+- Whether mailbox persistence exists through forwarding, hidden inbox rules, delegates, SendAs/SendOnBehalf, mailbox permissions, OAuth apps, or Power Automate flows.
+- Whether the case is confirmed compromise, suspected compromise, attempted compromise, historical activity, benign, or inconclusive.
+
 ## Public IP rule
 - If a public IP is present anywhere in the prompt or evidence, enrichment is required before closing the assessment.
 - `vpnchecker.sh` is the fast VPN and provider signal.
