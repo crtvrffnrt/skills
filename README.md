@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <strong>Reusable Agent Skills for defensive incident response, authorized security assessment,Penetration Tests, Azure operations and security research workflows.</strong>
+  <strong>Reusable Agent Skills for defensive incident response, authorized security assessment, penetration tests, Azure operations, and security research workflows.</strong>
 </p>
 
 <p align="center">
@@ -50,7 +50,7 @@ Use the skills as specialized modules. Do not load every skill at once unless th
 | `pentest-recon-surface-analysis` | Reconnaissance, endpoint discovery, asset inventory, service mapping, and control-plane surface analysis | Target scope, domains, hosts, URLs, auth state | Usually first phase; hands precise targets to mapper, authz, input, XSS, or CVE skills |
 | `pentest-web-application-logic-mapper` | Workflow mapping, hidden API discovery, and state-machine analysis | Crawl data, API docs, workflow descriptions | Bridges recon into business-logic or access-control testing |
 | `pentest-authentication-authorization-review` | Authentication, session, token, MFA, IDOR, BOLA, BFLA, privilege, and tenant isolation review | Role matrix, session tokens, resource IDs, expected permissions | Core auth/authz validator; overlaps with advanced access-control auditor |
-| `pentest-advanced-access-control-auditor` | Focused authorization failure analysis for IDOR, BFLA, vertical and horizontal privilege escalation | Target URL, role matrix, resource map | Specialized access-control workflow; currently stored as `SKILLS.md` instead of strict `SKILL.md` |
+| `pentest-advanced-access-control-auditor` | Focused authorization failure analysis for IDOR, BOLA, BFLA, RBAC, tenant isolation, and vertical or horizontal privilege escalation | Target URL, role matrix, resource map | Specialized access-control workflow for deep authz proof |
 | `pentest-input-protocol-manipulation` | Injection, parser differential testing, request smuggling, method tampering, header confusion, and payload mutation | Requests, parsers, protocol surfaces, payload hypotheses | Use when the primary question is input handling, not business logic or authz |
 | `pentest-xss` | Reflected, stored, DOM, blind XSS, CSP bypass, WAF bypass, and payload context analysis | URLs, parameters, headers, proxy traffic, browser evidence | Uses OOB skill when blind XSS needs callback proof |
 | `pentest-business-logic-abuse` | Workflow bypass, race condition, replay, quota abuse, state transition, and delegated execution testing | Workflow model, state transitions, reversible test sequence | Use after mapper or recon identifies a meaningful workflow |
@@ -83,9 +83,10 @@ This repository is the companion skill layer for the instruction profiles in `cr
 The intended routing pattern is:
 
 1. Use the AGENTS.md profile to set the global behavior and boundaries.
-2. Select one primary skill for the current phase.
-3. Add a secondary skill only when it materially improves evidence handling or the next step.
-4. Preserve the distinction between facts, indicators, hypotheses, and recommendations.
+2. Choose one owner skill for the current phase.
+3. Add a supporting skill, cross-check, or reviewer only when it materially improves evidence quality, validates a high-impact claim, resolves ambiguity, or handles a phase transition.
+4. Re-evaluate after confirmed evidence, rejected hypotheses, tool failure, or scope change.
+5. Preserve the distinction between facts, indicators, hypotheses, and recommendations.
 
 ## Workflow Routing
 
@@ -118,21 +119,14 @@ Use the narrowest validation skill that matches the actual hypothesis. For examp
 
 ### Skill Format
 
-Most directories follow the standard layout:
+Skill directories should follow the standard layout:
 
 ```text
 skill-name/
   SKILL.md
 ```
 
-One directory currently uses a non-standard filename:
-
-```text
-pentest-advanced-access-control-auditor/
-  SKILLS.md
-```
-
-If your skill installer requires strict Agent Skills layout, rename or copy that file to `SKILL.md` before packaging.
+Each skill directory should expose exactly one `SKILL.md` with valid YAML front matter containing `name` and `description`.
 
 One directory also has a directory/name mismatch:
 
@@ -145,7 +139,7 @@ Use the metadata name when the runtime routes by front matter. Use the directory
 
 ### Defensive Tooling
 
-The incident-response skills expect these local workstation tools when public IPs are present:
+The incident-response skills prefer these local workstation tools when public IPs are present:
 
 ```bash
 /root/Tools/IncidentResponseScripts/vpnchecker.sh <ip>
@@ -165,6 +159,8 @@ Threat-intelligence enrichment may depend on API keys stored outside this reposi
 ```bash
 ~/Tools/apikeys.txt
 ```
+
+If a preferred local enrichment tool is missing or fails, document the gap and continue with available telemetry. Missing helper scripts should not stop the whole investigation.
 
 For Microsoft cloud investigations, the skills prefer Azure CLI and Microsoft Graph through:
 
@@ -195,15 +191,7 @@ Key skill-specific dependencies:
 | Burp Suite or another proxy | `pentest-xss` | Useful for match-and-replace payload injection and traffic evidence |
 | Web search | `pentest-hacktricks-finder`, CVE helper, HTB lab skill | Required for current technique and vulnerability research |
 
-Example base install on Kali-style systems:
-
-```bash
-sudo apt update && sudo apt install -y \
-  curl wget git jq nmap dnsutils whois python3 python3-pip pipx golang nodejs npm chromium \
-  ffuf feroxbuster seclists nuclei httpx-toolkit dnsx katana interactsh-client
-```
-
-Some ProjectDiscovery tools are commonly installed through `pdtm`, Go, or upstream release packages when they are not available from the OS repository.
+Install only the tools needed for the active phase. Some ProjectDiscovery tools are commonly installed through `pdtm`, Go, or upstream release packages when they are not available from the OS repository.
 
 ## Install
 
@@ -243,7 +231,7 @@ cd skills
 
 ## Usage Guidance
 
-Use one primary skill per phase:
+Use one owner skill per phase:
 
 - Start broad defensive cases with `incident-response-main`.
 - Switch to `incident-response-bec` when mailbox abuse, AiTM, token replay, forwarding, or consent abuse is the central question.
@@ -252,6 +240,7 @@ Use one primary skill per phase:
 - Move to focused validation skills only after there is a concrete surface or hypothesis.
 - Use `pentest-exploit-execution-payload-control` only after a vulnerability primitive is validated.
 - Use `pentest-evidence-structuring-report-synthesis` for final deliverables, not live testing.
+- Add supporting skills or cross-checks only when they materially improve evidence quality or handle a phase transition.
 
 ## Safety Boundaries
 
@@ -268,9 +257,9 @@ These skills are written for defensive operations, authorized assessments, and l
 Keep skill changes additive and explicit. A useful skill should define:
 
 - When it should activate.
-- When it should not activate.
 - Required or preferred inputs.
 - Expected outputs.
 - Tooling assumptions.
 - Evidence standards.
 - Handoff relationships to upstream or downstream skills.
+- Verification gates, control checks, scope notes, and tool-gap handling where relevant.

@@ -6,7 +6,7 @@ Use this guide when investigating a suspicious Microsoft identity event.
 - Confirm the `UPN`.
 - Pull recent alerts, risky sign-ins, and identity protection events for the user.
 - Record the first suspicious time and the current incident window.
-- Extract all IPs from the prompt and supporting logs, then run `/root/Tools/IncidentResponseScripts/vpnchecker.sh <ip>` and `/root/Tools/IncidentResponseScripts/ipir.sh <ip>` for each unique public IP.
+- Extract all IPs from the prompt and supporting logs, then prefer `/root/Tools/IncidentResponseScripts/vpnchecker.sh <ip>` and `/root/Tools/IncidentResponseScripts/ipir.sh <ip>` for each unique public IP when present. If a script is unavailable, document the gap and continue with available telemetry.
 
 ## 2. Authentication review
 - Check source IP, geo, ASN, device, browser, and client app.

@@ -1,6 +1,6 @@
 ---
 name: incident-response-report
-description: Post-compromise incident reporting skill for decision-ready summaries, timelines, containment records, and remediation plans.
+description: "Incident-response reporting skill for decision-ready summaries, timelines, containment records, executive handoff, remediation plans, and unresolved evidence gaps."
 ---
 
 # Incident Response Report
@@ -16,7 +16,7 @@ Turn an investigation into a concise report that a human analyst can review and 
 - Do not overstate certainty.
 - If evidence is partial, say what is missing and how that limits the conclusion.
 - Default to Markdown unless the user requests HTML or another format.
-- If public IPs appear in the source material and no enrichment is already present, run the required enrichment before finalizing the report.
+- If public IPs appear in the source material and no enrichment is already present, prefer local enrichment before finalizing the report. If enrichment tooling is unavailable, mark the gap and avoid overclaiming.
 
 ## Standard structure
 1. Executive Assessment
@@ -41,7 +41,7 @@ Turn an investigation into a concise report that a human analyst can review and 
 
 ### Key Indicators
 - List IOCs and behavioral indicators with confidence notes.
-- For public IPs, include the combined results from `/root/Tools/IncidentResponseScripts/vpnchecker.sh` and `/root/Tools/IncidentResponseScripts/ipir.sh`, or state clearly that enrichment could not be completed.
+- For public IPs, include the combined results from `/root/Tools/IncidentResponseScripts/vpnchecker.sh` and `/root/Tools/IncidentResponseScripts/ipir.sh` when available, or state clearly that enrichment could not be completed.
 
 ### Analytical Assessment
 - Explain the likely attack path.
@@ -66,3 +66,4 @@ Turn an investigation into a concise report that a human analyst can review and 
 - Prefer short sections over narrative walls.
 - Keep the report suitable for technical stakeholders and leadership handoff.
 - Keep raw-tool provenance for public IP assessments so another analyst can reproduce the conclusion.
+- Report unresolved evidence gaps explicitly and keep severity tied to demonstrated impact and available telemetry.

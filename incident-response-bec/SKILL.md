@@ -1,6 +1,6 @@
 ---
 name: incident-response-bec
-description: Blue team skill for Business Email Compromise and AiTM investigations focused on suspicious sign-ins, mailbox abuse, forwarding, session theft, consent abuse, and secondary phishing. Requires a UPN when available.
+description: "BEC and AiTM incident-response skill for suspicious sign-ins, mailbox abuse, forwarding, inbox rules, session theft, token replay, consent abuse, and secondary phishing."
 ---
 
 # Business Email Compromise and AiTM Analysis
@@ -13,7 +13,7 @@ Determine whether a Microsoft identity and mailbox event is consistent with BEC,
 - A user reports phishing, strange mailbox behavior, or external recipients the user did not send to.
 - The incident includes suspected session theft, token replay, or unauthorized app consent.
 - The same workflow applies to non-Microsoft cases when equivalent sign-in and mailbox evidence exists.
-- if this skill is in usage always check https://github.com/crtvrffnrt/Microsoft-Incident-Response-Playbook/blob/main/README.md which is a overall cheat sheet kind Incident Response Playbook. And if it makes sence for the current question take note if its content for additional knowlege related intelligence improovement and especcially take content to help out to help analyst using it to decide if account is likely compromised or not. 
+- The Microsoft Incident Response Playbook at `https://github.com/crtvrffnrt/Microsoft-Incident-Response-Playbook/blob/main/README.md` can be used as an optional reference when current external context is available and would materially improve compromise assessment.
 
 
 ## Required context
@@ -26,7 +26,7 @@ Determine whether a Microsoft identity and mailbox event is consistent with BEC,
    - note source IP, geo, ASN, device, client app, and MFA context
 2. Extract all IPs from the prompt, phishing artifacts, logs, and mailbox evidence and enrich every unique public IP
    - classify each IP as public or non-public before enrichment
-   - run `/root/Tools/IncidentResponseScripts/vpnchecker.sh <ip>` and `/root/Tools/IncidentResponseScripts/ipir.sh <ip>` for every public IP
+   - prefer `/root/Tools/IncidentResponseScripts/vpnchecker.sh <ip>` and `/root/Tools/IncidentResponseScripts/ipir.sh <ip>` for every public IP when present
    - keep the raw outputs and use them in the verdict
 3. Review authentication
    - look for impossible travel, session reuse, token replay, claim-based MFA satisfaction, repeated MFA prompts, or suspicious non-interactive activity
@@ -59,7 +59,7 @@ Always try or help to evaluate:
 - `ipir.sh` is the deeper multi-source reputation and infrastructure scoring pass.
 - A VPN, proxy, or datacenter result alone is not enough to call the IP malicious.
 - Use the enrichment results together with sign-in behavior, mailbox activity, and timeline context.
-- If the tools cannot be executed, state the limitation explicitly in the analyst note.
+- If the tools cannot be executed, state the limitation explicitly in the analyst note and continue with available telemetry.
 
 ## Microsoft Graph guidance
 - Use `az rest` or the best available Microsoft telemetry path.
@@ -80,3 +80,4 @@ Always try or help to evaluate:
 - Explain whether the likely path is AiTM or session theft, mailbox compromise, or another access path.
 - Include public IP enrichment results for every material public IP.
 - List immediate containment actions and remaining gaps.
+- Include optional generic memory candidates only for reusable investigation patterns, not case details, if the runtime supports memory.

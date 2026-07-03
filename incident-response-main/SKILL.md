@@ -1,6 +1,6 @@
 ---
 name: incident-response-main
-description: Defensive incident-response companion for Microsoft Entra ID, Microsoft 365, Defender, and mixed identity or endpoint incidents. Use for sign-in triage, public-IP enrichment, initial scoping, containment planning, and analyst-ready notes. Human analyst makes the final call.
+description: "Defensive incident-response companion for Microsoft Entra ID, Microsoft 365, Defender, and mixed identity or endpoint incidents. Use for sign-in triage, public-IP enrichment, initial scoping, containment planning, and analyst-ready notes."
 ---
 
 # Incident Response Companion
@@ -12,7 +12,7 @@ Support the human analyst as a helper colleague. Produce evidence-based triage, 
 - A Microsoft alert, suspicious sign-in, mailbox anomaly, endpoint alert, consent event, or mixed identity plus endpoint incident needs investigation.
 - The user wants a structured assessment, timeline, or containment plan.
 - The task spans more than one specialized subskill.
-- if this skill is in usage always check https://github.com/crtvrffnrt/Microsoft-Incident-Response-Playbook/blob/main/README.md which is a overall cheat sheet kind Incident Response Playbook. And if it makes sence for the current question take note if its content for additional knowlege related intelligence improovement
+- The Microsoft Incident Response Playbook at `https://github.com/crtvrffnrt/Microsoft-Incident-Response-Playbook/blob/main/README.md` can be used as an optional reference when current external context is available and would materially improve triage.
 
 ## Core principles
 - Separate confirmed facts, indicators, and hypotheses.
@@ -43,7 +43,7 @@ Support the human analyst as a helper colleague. Produce evidence-based triage, 
 - Treat public IP handling as mandatory when a public IP is present in the user prompt, attached evidence, or parsed logs.
 - Extract IPs from raw text, JSON, CSV, timelines, and `scripts/extract_entities.py` output.
 - Exclude private, loopback, link-local, multicast, and other reserved ranges from external reputation steps.
-- For each unique public IP, run both scripts at their fixed workstation paths:
+- For each unique public IP, prefer both scripts at their fixed workstation paths when present:
   - `/root/Tools/IncidentResponseScripts/vpnchecker.sh <ip>`
   - `/root/Tools/IncidentResponseScripts/ipir.sh <ip>`
 - Preserve the raw output from both tools and normalize at least:
@@ -51,7 +51,7 @@ Support the human analyst as a helper colleague. Produce evidence-based triage, 
   - score, final state, infrastructure flags, ASN, organization, country, and threat-intel hits from `ipir.sh`
 - Use the combined output to assign an IP verdict such as `CLEAN`, `SUSPICIOUS`, or `MALICIOUS`.
 - A VPN or cloud-hosting flag alone is a risk signal, not standalone proof of maliciousness.
-- If either script fails because of missing dependencies, API limits, or environment issues, document the gap and continue the broader investigation.
+- If either script is missing or fails because of missing dependencies, API limits, or environment issues, document the gap and continue the broader investigation with available telemetry.
 
 ## Identity review
 - Review interactive and non-interactive sign-ins, MFA context, risky sign-ins, device state, source IP, ASN, geo, client app, and browser.
@@ -77,6 +77,11 @@ Support the human analyst as a helper colleague. Produce evidence-based triage, 
 - Use `v1.0` when it exposes the required field; use `beta` only when necessary.
 - Preserve raw evidence before session revocation, password reset, account block, or host isolation.
 
+## Tool Gap Handling
+- Check for Azure CLI, Graph access, Defender data, mailbox audit data, and local enrichment scripts before relying on them.
+- If a preferred tool or telemetry source is unavailable, clearly mark the gap, use the best available fallback, and include what the missing source would improve.
+- Do not treat missing enrichment tooling as a reason to stop the entire investigation.
+
 ## Supporting references
 - `references/tp_indicators.md` for high-signal TP and common false-positive patterns.
 - `references/identity_analysis.md` for user account compromise scoping.
@@ -91,3 +96,4 @@ Support the human analyst as a helper colleague. Produce evidence-based triage, 
 - Public IP enrichment findings with raw-tool provenance.
 - Containment actions and remaining gaps.
 - Clear statement of what is known versus inferred.
+- Optional memory candidates limited to generic investigation patterns, query structures, and output formats when the runtime supports memory.

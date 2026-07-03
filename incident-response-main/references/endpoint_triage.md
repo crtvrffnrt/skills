@@ -11,7 +11,7 @@ Use this guide when the incident includes a workstation or server alert.
 - Look for script engines, LOLBins, PowerShell, WMI, scheduled tasks, services, or startup persistence.
 - Check network destinations, ports, and bytes transferred.
 - Inspect file drops, archive extraction, browser downloads, and suspicious child processes.
-- For any material public destination IP, run `/root/Tools/IncidentResponseScripts/vpnchecker.sh <ip>` and `/root/Tools/IncidentResponseScripts/ipir.sh <ip>` and keep the raw output with the case notes.
+- For any material public destination IP, prefer `/root/Tools/IncidentResponseScripts/vpnchecker.sh <ip>` and `/root/Tools/IncidentResponseScripts/ipir.sh <ip>` when present, and keep the raw output with the case notes. If a script is unavailable, document the gap and continue with available telemetry.
 
 ## 3. Scope the host
 - Determine whether the activity is isolated to one host or appears across multiple machines.
