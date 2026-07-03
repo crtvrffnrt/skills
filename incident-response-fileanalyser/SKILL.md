@@ -1,6 +1,7 @@
 ---
 name: incident-response-fileanalyser
-description: "Static malware reverse-engineering and threat-intelligence triage for unknown files, Windows EXE/PE binaries, scripts, archives, ISOs, JavaScript, PowerShell, documents, and unpacked payloads. Use when a user provides a sample path, hash, filename, or file and asks whether it is malicious, benign, suspicious, contains IoCs, or should be reverse engineered with Ghidra, strings, capa, YARA, public TI, and structured phase artifacts."
+description: "Static malware reverse-engineering and threat-intelligence triage for unknown files, Windows EXE/PE binaries, scripts, archives, ISOs, JavaScript, PowerShell, documents, and unpacked payloads. Use when a user provides a sample path, hash, filename, or file and asks whether it is malicious, benign, suspicious, contains IoCs, or should be reverse engineered with 
+Ghidra, strings, capa, YARA, public TI, and structured phase artifacts."
 compatibility: "Shell-capable coding agents such as Codex CLI, Gemini/Antigravity, Claude Code, or similar. Requires Bash; prefers file, sha256sum, strings, objdump, readelf, exiftool, unzip/7z, Ghidra analyzeHeadless, jq, curl. Headless only; never use Wine."
 ---
 
@@ -14,7 +15,7 @@ This skill is optimized for incident responders, incident triage analysts, secur
 - The user gives a file path, uploaded sample, archive, ISO, script, hash, filename, or extracted payload and asks for malware triage, reverse engineering, IoCs, suspicious behavior, or a benign/malicious verdict.
 - The artifact may be a Windows PE/EXE/DLL/SYS, .NET assembly, PowerShell, JavaScript, HTA/VBS, JAR, archive, ISO, Office/PDF document, or mixed dropper bundle.
 - The user wants Ghidra headless analysis, imports, strings, call graph, decompiled behavior, local signature matching, public hash reputation, or APT/malware-family correlation.
-
+- If user choose this skill manually always include Ghidra headless analyses
 ## Do not use when
 - The user is asking to build, improve, weaponize, persist, evade detection, or deploy malware.
 - The task requires live detonation, lateral movement, credential theft, exploit execution, or malware operation outside an explicitly authorized lab.
