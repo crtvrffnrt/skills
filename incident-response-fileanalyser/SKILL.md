@@ -29,7 +29,7 @@ This skill is optimized for incident responders, incident triage analysts, secur
 - Keep API keys secret. Read them from environment variables or key files, but never print them, store them in reports, or include them in command transcripts.
 - A clean public reputation result is not proof of benignness. A single noisy detection is not proof of malware. Verdicts must be tied to evidence.
 - If a tool is missing, times out, crashes, or does not support the file type, record the gap and continue with the next phase.
-
+- If possible each run with this skill should include all phases. Especially if posible always try to reverse it vith ghidra.
 ## Context-control model
 Reverse engineering can generate very large files. Use phase artifacts as the memory boundary.
 At the end of every phase, write both a compact Markdown summary and a machine-readable JSON summary. In the next phase, load only:
@@ -507,6 +507,8 @@ Common false-positive traps:
 - Filename-only search hits are weak.
 - No VirusTotal hit or zero detections does not prove benign.
 - Benign admin tools can legitimately use process, network, service, registry, or crypto APIs.
+- Each phase before should have its own output, own verdict and own IOC´s. The final correlation needs to check all of them the get a detaild overall result.
+
 
 ## Final chat output
 The user usually wants the agent answer, not all generated files. Keep the final response concise and decision-ready:
@@ -536,3 +538,4 @@ Assessment: <one or two sentence analyst conclusion>
 - TI normalization: `<path>`
 ```
 When the evidence is benign, still include limitations and the exact basis for legitimacy. When malicious, include containment-relevant IoCs and recommended next defensive steps, but do not provide instructions for operating or improving the malware.
+Menten which Phase was successfull executed and which was skipped. 
