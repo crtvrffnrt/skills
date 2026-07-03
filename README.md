@@ -118,26 +118,6 @@ Use the narrowest validation skill that matches the actual hypothesis. For examp
 
 ## Dependencies
 
-### Skill Format
-
-Skill directories should follow the standard layout:
-
-```text
-skill-name/
-  SKILL.md
-```
-
-Each skill directory should expose exactly one `SKILL.md` with valid YAML front matter containing `name` and `description`.
-
-One directory also has a directory/name mismatch:
-
-```text
-pentest-gemini-sub-htb/SKILL.md
-  name: pentest-htb-lab-specialist
-```
-
-Use the metadata name when the runtime routes by front matter. Use the directory name when installing or referencing the local path.
-
 ### Defensive Tooling
 
 The incident-response skills prefer these local workstation tools when public IPs are present:
