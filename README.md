@@ -22,7 +22,7 @@ The goal is predictable routing: a broad profile such as `AGENTS-CORE-BLUE.md` o
 
 The repository is organized around two main work modes:
 
-- **Incident response skills** support defensive Microsoft security investigations, BEC and AiTM analysis, public-IP enrichment, and report writing.
+- **Incident response skills** support defensive Microsoft security investigations, BEC and AiTM analysis, public-IP enrichment, file analysis, and report writing.
 - **Pentest skills** support authorized security assessment workflows from reconnaissance through validation, exploit proof, and final reporting.
 
 Several helper skills provide environment-specific execution or research support:
@@ -41,6 +41,7 @@ Use the skills as specialized modules. Do not load every skill at once unless th
 | --- | --- | --- | --- |
 | `incident-response-main` | General IR triage for Microsoft Entra ID, Microsoft 365, Defender, identity, mailbox, endpoint, and mixed incidents | UPN, host, alert ID, incident ID, UTC time window, exported logs | `az rest`, Microsoft telemetry, `vpnchecker.sh`, `ipir.sh`, optional `scripts/extract_entities.py` |
 | `incident-response-bec` | BEC, AiTM, session theft, mailbox abuse, suspicious forwarding, OAuth consent, and secondary phishing analysis | UPN, incident window, sign-in evidence, mailbox evidence, phishing message IDs | Microsoft Graph or equivalent mailbox telemetry, `vpnchecker.sh`, `ipir.sh` |
+| `incident-response-fileanalyser` | Static malware reverse engineering and triage for files, archives, scripts, and documents | Sample path, hash, filename, file metadata, suspicious artifacts | `strings`, `capa`, `YARA`, `Ghidra`, public TI sources |
 | `incident-response-report` | Decision-ready incident report, timeline, containment record, remediation plan, and executive handoff | Mature investigation notes, timeline, confirmed facts, IoCs, containment actions | Prior enrichment and telemetry collection from IR workflow |
 
 ### Pentest Skills
@@ -73,7 +74,7 @@ This repository is the companion skill layer for the instruction profiles in `cr
 
 | AGENTS.md profile | Recommended skills |
 | --- | --- |
-| `AGENTS-CORE-BLUE.md` | `incident-response-main`, `incident-response-bec`, `incident-response-report` |
+| `AGENTS-CORE-BLUE.md` | `incident-response-main`, `incident-response-bec`, `incident-response-fileanalyser`, `incident-response-report` |
 | `AGENTS-CORE-RED.md` | Pentest skills for recon, mapping, authz, input/protocol testing, XSS, OOB validation, CVE research, exploit proof, and report synthesis |
 | `AGENTS-SUB-HTB.md` | `pentest-htb-lab-specialist`, plus recon, CVE, input, authz, and exploit skills as needed |
 | `AGENTS-SUB-RECON.md` | `pentest-recon-surface-analysis`, `pentest-web-application-logic-mapper`, `pentest-hacktricks-finder` |
@@ -222,6 +223,7 @@ cd skills
 |   |-- references/tp_indicators.md
 |   `-- scripts/extract_entities.py
 |-- incident-response-bec/
+|-- incident-response-fileanalyser/
 |-- incident-response-report/
 |-- pentest-*/
 `-- pentest-xss/
@@ -235,6 +237,7 @@ Use one owner skill per phase:
 
 - Start broad defensive cases with `incident-response-main`.
 - Switch to `incident-response-bec` when mailbox abuse, AiTM, token replay, forwarding, or consent abuse is the central question.
+- Use `incident-response-fileanalyser` for static triage of suspicious files, scripts, archives, or documents.
 - Use `incident-response-report` only when the investigation is ready to become a report.
 - Start authorized assessments with `pentest-recon-surface-analysis`.
 - Move to focused validation skills only after there is a concrete surface or hypothesis.
