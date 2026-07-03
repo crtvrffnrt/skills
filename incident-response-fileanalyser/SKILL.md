@@ -1,7 +1,6 @@
 ---
 name: incident-response-fileanalyser
-description: "Static malware reverse-engineering and threat-intelligence triage for unknown files, Windows EXE/PE binaries, scripts, archives, ISOs, JavaScript, PowerShell, documents, and unpacked payloads. Use when a user provides a sample path, hash, filename, or file and asks whether it is malicious, benign, suspicious, contains IoCs, or should be reverse engineered with 
-Ghidra, strings, capa, YARA, public TI, and structured phase artifacts."
+description: "Static malware reverse-engineering and threat-intelligence triage for unknown files, Windows EXE/PE binaries, scripts, archives, ISOs, JavaScript, PowerShell, documents, and unpacked payloads. Use when a user provides a sample path, hash, filename, or file and asks whether it is malicious, benign, suspicious, contains IoCs, or should be reverse engineered with Ghidra, strings, capa, YARA, public TI, and structured phase artifacts."
 compatibility: "Shell-capable coding agents such as Codex CLI, Gemini/Antigravity, Claude Code, or similar. Requires Bash; prefers file, sha256sum, strings, objdump, readelf, exiftool, unzip/7z, Ghidra analyzeHeadless, jq, curl. Headless only; never use Wine."
 ---
 
