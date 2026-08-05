@@ -49,6 +49,7 @@ Use the skills as specialized modules. Do not load every skill at once unless th
 | Skill | Purpose | Typical inputs | Relationship |
 | --- | --- | --- | --- |
 | `pentest-recon-surface-analysis` | Reconnaissance, endpoint discovery, asset inventory, service mapping, and control-plane surface analysis | Target scope, domains, hosts, URLs, auth state | Usually first phase; hands precise targets to mapper, authz, input, XSS, or CVE skills |
+| `pentest-web-enumeration` | Active HTTP(S) fingerprinting, vhost discovery, crawl/JS/API mapping, focused content discovery, CMS checks, and Nuclei-led early triage | Authorized URLs, hosts, ports, exclusions, auth context, rate limits | Specialized web-enumeration owner after broad recon; hands concrete surfaces and hypotheses to mapper or focused validation skills |
 | `pentest-web-application-logic-mapper` | Workflow mapping, hidden API discovery, and state-machine analysis | Crawl data, API docs, workflow descriptions | Bridges recon into business-logic or access-control testing |
 | `pentest-authentication-authorization-review` | Authentication, session, token, MFA, IDOR, BOLA, BFLA, privilege, and tenant isolation review | Role matrix, session tokens, resource IDs, expected permissions | Core auth/authz validator; overlaps with advanced access-control auditor |
 | `pentest-advanced-access-control-auditor` | Focused authorization failure analysis for IDOR, BOLA, BFLA, RBAC, tenant isolation, and vertical or horizontal privilege escalation | Target URL, role matrix, resource map | Specialized access-control workflow for deep authz proof |
@@ -107,6 +108,7 @@ Use `incident-response-main` as the default defensive entry point. It contains r
 ```text
 Scope or target
   -> pentest-recon-surface-analysis
+  -> pentest-web-enumeration when HTTP(S) enumeration is the owner phase
   -> pentest-web-application-logic-mapper
   -> focused validation skill:
        auth/authz, advanced access control, input/protocol, XSS, business logic, OOB, or CVE research
@@ -220,6 +222,7 @@ Use one owner skill per phase:
 - Use `incident-response-fileanalyser` for static triage of suspicious files, scripts, archives, or documents.
 - Use `incident-response-report` only when the investigation is ready to become a report.
 - Start authorized assessments with `pentest-recon-surface-analysis`.
+- Use `pentest-web-enumeration` for live web fingerprinting, vhosts, routes, JavaScript, APIs, directories, sensitive files, CMS checks, and Nuclei-led early triage.
 - Move to focused validation skills only after there is a concrete surface or hypothesis.
 - Use `pentest-exploit-execution-payload-control` only after a vulnerability primitive is validated.
 - Use `pentest-evidence-structuring-report-synthesis` for final deliverables, not live testing.
