@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <strong>Reusable Agent Skills for defensive incident response, authorized security assessment, penetration tests, Azure operations, and security research workflows.</strong>
+  <strong>Agent Skills for defensive incident response, authorized security assessment, penetration tests, Azure operations, and security research workflows.</strong>
 </p>
 
 <p align="center">
